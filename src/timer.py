@@ -41,7 +41,10 @@ class RunningState(State):
     def step(self):
         self.cur_time = time.time()
         delta = int(self.cur_time - self.start_time)
-        msg = f"{delta}s"
+        if delta < 60:
+            msg = f"{delta}s"
+        else:
+            msg = f"{delta // 60}m:{delta % 60}s"
         self.dbus.call(msg)
 
     def done(self):

@@ -37,7 +37,7 @@ class App:
     def __init__(self):
         self.name = "Yapona"
         self.indicator = appindicator.Indicator.new(
-            "appindicator", get_icon("tomato.svg"),
+            "appindicator", get_icon("focus.svg"),
             appindicator.IndicatorCategory.APPLICATION_STATUS)
         self.indicator.set_status(appindicator.IndicatorStatus.ACTIVE)
         self.indicator.set_menu(self.create_menu())
@@ -92,8 +92,8 @@ def handle_exit(*args):
 
 
 if __name__ == '__main__':
+    signal.signal(signal.SIGINT, signal.SIG_DFL)
     atexit.register(handle_exit)
     signal.signal(signal.SIGTERM, handle_exit)
-    signal.signal(signal.SIGINT, handle_exit)
     app = App()
     gtk.main()
