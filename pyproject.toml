@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "yapona"
-version = "0.1.0"
+version = "0.1.2"
 description = "Pomodoro timer"
 authors = ["Dima Lipin <dimich3d@ya.ru>"]
 license = "MIT"
@@ -15,6 +15,9 @@ pygobject = "^3.42.2"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+yapona = "yapona.app:main"
 
 [tool.pylint."MESSAGES CONTROL"]
 disable ="missing-class-docstring,missing-function-docstring,no-self-argument,too-many-arguments,too-many-locals,too-many-public-methods,too-many-return-statements,too-many-statements,too-many-lines"

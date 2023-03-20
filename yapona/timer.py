@@ -4,7 +4,7 @@ Pomodoro timer class
 
 from abc import ABC, abstractmethod
 import time
-from src.dbus import DBus
+from yapona.dbus import DBus
 
 
 class State(ABC):
