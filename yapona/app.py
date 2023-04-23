@@ -3,13 +3,15 @@ from yapona.timer import Timer
 import os
 from threading import Thread, Lock
 import time
-from gi.repository import GLib
+from functools import partial
+import signal
+import gi
+gi.require_version('Gtk', '3.0')
+gi.require_version('Notify', '0.7')
+gi.require_version("AppIndicator3", "0.1")
 from gi.repository import Notify
-from gi.repository import GObject
 from gi.repository import AppIndicator3 as appindicator
 from gi.repository import Gtk as gtk
-import gi
-import signal
 
 def get_icon(name):
     icons_dir = os.path.dirname(os.path.realpath(__file__))
@@ -92,9 +94,6 @@ def handle_exit(*args):
 
 
 def main():
-    gi.require_version('Gtk', '3.0')
-    gi.require_version('Notify', '0.7')
-    gi.require_version("AppIndicator3", "0.1")
     signal.signal(signal.SIGINT, signal.SIG_DFL)
     atexit.register(handle_exit)
     signal.signal(signal.SIGTERM, handle_exit)
