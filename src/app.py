@@ -1,20 +1,17 @@
+import time
+from threading import Thread, Lock
+import os
+from src.timer import Timer
+import atexit
 import gi
 import signal
-
+from functools import partial
 gi.require_version('Gtk', '3.0')
 gi.require_version('Notify', '0.7')
 gi.require_version("AppIndicator3", "0.1")
 from gi.repository import Gtk as gtk
 from gi.repository import AppIndicator3 as appindicator
-from gi.repository import GObject
 from gi.repository import Notify
-from gi.repository import GLib
-import time
-from threading import Thread, Lock
-import os
-from src.timer import Timer
-
-import atexit
 
 mutex = Lock()
 
@@ -50,13 +47,19 @@ class App:
 
     def create_menu(self):
         menu = gtk.Menu()
-        item_start = gtk.MenuItem(label="Start")
-        item_start.connect("activate", self.start)
+        item_start_10_min = gtk.MenuItem(label="Start (10 min)")
+        item_start_10_min.connect("activate", partial(self.start, duration=10 * 60))
+        item_start_20_min = gtk.MenuItem(label="Start (20 min)")
+        item_start_20_min.connect("activate", partial(self.start, duration=20 * 60))
+        item_start_30_min = gtk.MenuItem(label="Start (30 min)")
+        item_start_30_min.connect("activate", partial(self.start, duration=30 * 60))
         item_reset = gtk.MenuItem(label="Reset")
         item_reset.connect("activate", self.reset)
         item_quit = gtk.MenuItem(label="Quit")
         item_quit.connect("activate", self.quit)
-        menu.append(item_start)
+        menu.append(item_start_10_min)
+        menu.append(item_start_20_min)
+        menu.append(item_start_30_min)
         menu.append(item_reset)
         menu.append(item_quit)
         menu.show_all()
@@ -71,8 +74,9 @@ class App:
                     self.timer.msg = ""
             time.sleep(1)
 
-    def start(self, widget):
+    def start(self, widget, duration = 60 * 20):
         with mutex:
+            self.timer = Timer(duration=duration)
             send_notification("Pomodoro started")
             self.timer.start()
 

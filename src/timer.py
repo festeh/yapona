@@ -32,11 +32,11 @@ class IdleState(State):
 
 
 class RunningState(State):
-    def __init__(self, dbus):
+    def __init__(self, dbus, duration = 60 * 20):
         self.dbus = dbus
         self.start_time = time.time()
         self.cur_time = self.start_time
-        self.max_duration = 60 * 20
+        self.duration = duration
 
     def step(self):
         self.cur_time = time.time()
@@ -48,20 +48,21 @@ class RunningState(State):
         self.dbus.call(msg)
 
     def done(self):
-        return self.cur_time - self.start_time >= self.max_duration
+        return self.cur_time - self.start_time >= self.duration
 
 
 class Timer:
 
-    def __init__(self):
+    def __init__(self, duration = 60 * 20):
         self.dbus = DBus()
         self.state = IdleState(self.dbus)
         self.msg = ""
+        self.duration = duration
 
     def start(self) -> bool:
         if self.state.__class__ != IdleState:
             return False
-        self.state = RunningState(self.dbus)
+        self.state = RunningState(self.dbus, self.duration)
         return True
 
     def interrupt(self) -> bool:
