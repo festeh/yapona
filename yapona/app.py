@@ -1,20 +1,15 @@
-import time
-from threading import Thread, Lock
-import os
-from src.timer import Timer
 import atexit
+from yapona.timer import Timer
+import os
+from threading import Thread, Lock
+import time
+from gi.repository import GLib
+from gi.repository import Notify
+from gi.repository import GObject
+from gi.repository import AppIndicator3 as appindicator
+from gi.repository import Gtk as gtk
 import gi
 import signal
-from functools import partial
-gi.require_version('Gtk', '3.0')
-gi.require_version('Notify', '0.7')
-gi.require_version("AppIndicator3", "0.1")
-from gi.repository import Gtk as gtk
-from gi.repository import AppIndicator3 as appindicator
-from gi.repository import Notify
-
-mutex = Lock()
-
 
 def get_icon(name):
     icons_dir = os.path.dirname(os.path.realpath(__file__))
@@ -39,6 +34,7 @@ class App:
         self.indicator.set_status(appindicator.IndicatorStatus.ACTIVE)
         self.indicator.set_menu(self.create_menu())
         self.indicator.set_label(self.name, self.name)
+        self.mutex = Lock()
         self.start_time = time.time()
         self.timer = Timer()
         self.update = Thread(target=self.show_seconds)
@@ -67,7 +63,7 @@ class App:
 
     def show_seconds(self):
         while True:
-            with mutex:
+            with self.mutex:
                 self.timer.update()
                 if self.timer.msg:
                     send_notification(self.timer.msg)
@@ -75,13 +71,13 @@ class App:
             time.sleep(1)
 
     def start(self, widget, duration = 60 * 20):
-        with mutex:
+        with self.mutex:
             self.timer = Timer(duration=duration)
             send_notification("Pomodoro started")
             self.timer.start()
 
     def reset(self, widget):
-        with mutex:
+        with self.mutex:
             send_notification("Pomodoro reset")
             self.timer.interrupt()
 
@@ -90,14 +86,21 @@ class App:
 
 
 def handle_exit(*args):
-    from src.dbus import DBus
+    from yapona.dbus import DBus
     bus = DBus()
     bus.call("Waiting")
 
 
-if __name__ == '__main__':
+def main():
+    gi.require_version('Gtk', '3.0')
+    gi.require_version('Notify', '0.7')
+    gi.require_version("AppIndicator3", "0.1")
     signal.signal(signal.SIGINT, signal.SIG_DFL)
     atexit.register(handle_exit)
     signal.signal(signal.SIGTERM, handle_exit)
     app = App()
     gtk.main()
+
+
+if __name__ == '__main__':
+    main()
