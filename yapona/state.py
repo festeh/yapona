@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 import time
+from yapona.utils import generate_id
 
 
 class State(ABC):
@@ -16,7 +17,7 @@ class State(ABC):
 class IdleState(State):
 
     def __init__(self):
-        pass
+        self.id = generate_id()
 
     def update(self):
         pass
@@ -27,7 +28,8 @@ class IdleState(State):
 
 class RunningState(State):
 
-    def __init__(self, duration=60 * 20):
+    def __init__(self, state_id, duration=60 * 20):
+        self.id = state_id
         self.start_time = time.time()
         self.cur_time = self.start_time
         self.duration = duration

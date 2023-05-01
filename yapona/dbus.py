@@ -1,3 +1,4 @@
+from typing_extensions import override
 from yapona.hook import Hook
 from dbus_next.glib import MessageBus
 from dbus_next.message import Message
@@ -25,9 +26,11 @@ class DBusHook(Hook):
     def __init__(self):
         self.dbus = DBus()
 
+    @override
     def on_start(self, state: IdleState):
         self.dbus.call("Waiting")
 
+    @override
     def on_update(self, state: RunningState):
         delta = int(state.delta)
         if delta < 60:
@@ -36,8 +39,10 @@ class DBusHook(Hook):
             msg = f"{delta // 60}m:{delta % 60}s"
         self.dbus.call(msg)
 
+    @override
     def on_interrupt(self, state: RunningState):
         self.dbus.call("Waiting")
 
+    @override
     def on_done(self, state: IdleState):
         self.dbus.call("Waiting")

@@ -1,15 +1,17 @@
-from typing import Optional, cast
+from typing import cast
 from yapona.state import RunningState, IdleState
 from yapona.timer import Timer
 from yapona.hook import HookCollection
 from yapona.dbus import DBusHook
+from yapona.history import HistoryHook
 
 
 class Engine:
 
     def __init__(self, duration=60 * 20) -> None:
-        self.timer = Timer(duration)
-        self.hooks = HookCollection([DBusHook()])
+        self.duration = duration
+        self.timer = Timer()
+        self.hooks = HookCollection([DBusHook(), HistoryHook()])
         self.msg = ""
 
     def _get_state_as(self, cls):
@@ -22,6 +24,7 @@ class Engine:
         if state is None:
             return False
         self.hooks.on_start(state)
+        self.timer.state = RunningState(self.timer.state.id, self.duration)
         return self.timer.start()
 
     def interrupt(self):
@@ -45,7 +48,6 @@ class Engine:
         state = self._get_state_as(RunningState)
         if state is None:
             return False
-        self.msg = "Pomodoro done. Hooray!"
-        state = IdleState()
-        self.timer.state = state
         self.hooks.on_done(state)
+        self.msg = "Pomodoro done. Hooray!"
+        self.timer.state = IdleState()

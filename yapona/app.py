@@ -62,6 +62,11 @@ class App:
         menu.append(item_start_10_min)
         menu.append(item_start_20_min)
         menu.append(item_start_30_min)
+        if os.environ.get("DEBUG") is not None:
+            item_start_10_sec = gtk.MenuItem(label="Start (10 sec)")
+            item_start_10_sec.connect("activate", partial(self.start, duration=10))
+            menu.append(item_start_10_sec)
+
         menu.append(item_reset)
         menu.append(item_quit)
         menu.show_all()

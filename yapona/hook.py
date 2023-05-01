@@ -1,7 +1,8 @@
 from yapona.state import IdleState, RunningState
+from abc import ABC
 
 
-class Hook:
+class Hook(ABC):
 
     def on_start(self, state: IdleState):
         pass
@@ -12,7 +13,7 @@ class Hook:
     def on_update(self, state: RunningState):
         pass
 
-    def on_done(self, state: IdleState):
+    def on_done(self, state: RunningState):
         pass
 
 
@@ -29,7 +30,7 @@ class HookCollection(Hook):
         for hook in self.hooks:
             hook.on_interrupt(state)
 
-    def on_done(self, state: IdleState):
+    def on_done(self, state: RunningState):
         for hook in self.hooks:
             hook.on_done(state)
 

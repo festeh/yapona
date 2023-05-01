@@ -6,17 +6,15 @@ from yapona.state import IdleState, RunningState
 
 class Timer:
 
-    def __init__(self, duration=60 * 20):
-        self.state = IdleState()
+    def __init__(self):
+        self.state: IdleState | RunningState = IdleState()
         self.description = ""
         self.tags = []
-        self.duration = duration
 
     def get_state_class(self):
         return self.state.__class__
 
     def start(self) -> bool:
-        self.state = RunningState(self.duration)
         return True
 
     def interrupt(self) -> bool:
