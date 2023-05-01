@@ -1,5 +1,5 @@
 import atexit
-from yapona.timer import Timer
+from yapona.engine import Engine
 import os
 from threading import Thread, Lock
 import time
@@ -38,7 +38,7 @@ class App:
         self.indicator.set_label(self.name, self.name)
         self.mutex = Lock()
         self.start_time = time.time()
-        self.timer = Timer()
+        self.pomo_engine = Engine()
         self.update = Thread(target=self.show_seconds)
         self.update.daemon = True
         self.update.start()
@@ -66,22 +66,22 @@ class App:
     def show_seconds(self):
         while True:
             with self.mutex:
-                self.timer.update()
-                if self.timer.msg:
-                    send_notification(self.timer.msg)
-                    self.timer.msg = ""
+                self.pomo_engine.update()
+                if self.pomo_engine.msg:
+                    send_notification(self.pomo_engine.msg)
+                    self.pomo_engine.msg = ""
             time.sleep(1)
 
     def start(self, widget, duration = 60 * 20):
         with self.mutex:
-            self.timer = Timer(duration=duration)
+            self.pomo_engine = Engine(duration=duration)
             send_notification("Pomodoro started")
-            self.timer.start()
+            self.pomo_engine.start()
 
     def reset(self, widget):
         with self.mutex:
             send_notification("Pomodoro reset")
-            self.timer.interrupt()
+            self.pomo_engine.interrupt()
 
     def quit(self, widget):
         gtk.main_quit()
