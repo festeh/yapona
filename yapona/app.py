@@ -6,12 +6,14 @@ import time
 from functools import partial
 import signal
 import gi
+
 gi.require_version('Gtk', '3.0')
 gi.require_version('Notify', '0.7')
 gi.require_version("AppIndicator3", "0.1")
 from gi.repository import Notify
 from gi.repository import AppIndicator3 as appindicator
 from gi.repository import Gtk as gtk
+
 
 def get_icon(name):
     icons_dir = os.path.dirname(os.path.realpath(__file__))
@@ -48,9 +50,11 @@ class App:
         item_start_10_min = gtk.MenuItem(label="Start (10 min)")
         item_start_10_min.connect("activate", partial(self.start, duration=10 * 60))
         item_start_20_min = gtk.MenuItem(label="Start (20 min)")
-        item_start_20_min.connect("activate", partial(self.start, duration=20 * 60))
+        item_start_20_min.connect("activate",
+                                  partial(self.start, duration=20 * 60))
         item_start_30_min = gtk.MenuItem(label="Start (30 min)")
-        item_start_30_min.connect("activate", partial(self.start, duration=30 * 60))
+        item_start_30_min.connect("activate",
+                                  partial(self.start, duration=30 * 60))
         item_reset = gtk.MenuItem(label="Reset")
         item_reset.connect("activate", self.reset)
         item_quit = gtk.MenuItem(label="Quit")
@@ -72,7 +76,7 @@ class App:
                     self.pomo_engine.msg = ""
             time.sleep(1)
 
-    def start(self, widget, duration = 60 * 20):
+    def start(self, widget, duration=60 * 20):
         with self.mutex:
             self.pomo_engine = Engine(duration=duration)
             send_notification("Pomodoro started")

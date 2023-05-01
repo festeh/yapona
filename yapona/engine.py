@@ -13,7 +13,7 @@ class Engine:
         self.msg = ""
 
     def _get_state_as(self, cls):
-        if self.timer.__class__ != cls:
+        if self.timer.state.__class__ != cls:
             return None
         return cast(cls, self.timer.state)
 
@@ -32,11 +32,9 @@ class Engine:
         return self.timer.interrupt()
 
     def update(self):
-        print("tik")
         state = self._get_state_as(RunningState)
         if state is None:
             return False
-        print("tik2")
         self.hooks.on_update(state)
         ok = self.timer.update()
         if ok and self.timer.is_done():

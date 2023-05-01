@@ -31,7 +31,7 @@ class HookCollection(Hook):
 
     def on_done(self, state: IdleState):
         for hook in self.hooks:
-            hook.on_done()
+            hook.on_done(state)
 
     def on_update(self, state: RunningState):
         for hook in self.hooks:
