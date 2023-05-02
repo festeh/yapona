@@ -17,8 +17,5 @@ typing-extensions = "^4.5.0"
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
-[tool.poetry.scripts]
-yapona = "yapona.app:main"
-
 [tool.pylint."MESSAGES CONTROL"]
 disable ="missing-class-docstring,missing-function-docstring,no-self-argument,too-many-arguments,too-many-locals,too-many-public-methods,too-many-return-statements,too-many-statements,too-many-lines"
