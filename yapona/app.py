@@ -17,8 +17,9 @@ from gi.repository import Gtk as gtk
 
 def get_icon(name):
     icons_dir = os.path.dirname(os.path.realpath(__file__))
+    if icons_dir is None:
+        return None
     path = os.path.realpath(os.path.join(icons_dir, name))
-    assert os.path.exists(path)
     return path
 
 
