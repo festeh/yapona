@@ -1,5 +1,6 @@
 import atexit
 from yapona.engine import Engine
+from yapona.version import get_version
 import os
 from threading import Thread, Lock
 import time
@@ -9,10 +10,8 @@ import gi
 
 gi.require_version('Gtk', '3.0')
 gi.require_version('Notify', '0.7')
-gi.require_version("AppIndicator3", "0.1")
-from gi.repository import Notify
-from gi.repository import AppIndicator3 as appindicator
-from gi.repository import Gtk as gtk
+gi.require_version("XApp", "1.0")
+from gi.repository import Notify, XApp, Gtk as gtk
 
 
 def get_icon(name):
@@ -32,12 +31,10 @@ class App:
 
     def __init__(self):
         self.name = "Yapona"
-        self.indicator = appindicator.Indicator.new(
-            "appindicator", get_icon("focus.svg"),
-            appindicator.IndicatorCategory.APPLICATION_STATUS)
-        self.indicator.set_status(appindicator.IndicatorStatus.ACTIVE)
-        self.indicator.set_menu(self.create_menu())
-        self.indicator.set_label(self.name, self.name)
+        self.indicator = XApp.StatusIcon()
+        self.indicator.set_primary_menu(self.create_menu())
+        self.indicator.set_tooltip_text(get_version())
+        self.indicator.set_icon_name(get_icon("focus.svg"))
         self.mutex = Lock()
         self.start_time = time.time()
         self.pomo_engine = Engine()
@@ -48,7 +45,8 @@ class App:
     def create_menu(self):
         menu = gtk.Menu()
         item_start_10_min = gtk.MenuItem(label="Start (10 min)")
-        item_start_10_min.connect("activate", partial(self.start, duration=10 * 60))
+        item_start_10_min.connect("activate",
+                                  partial(self.start, duration=10 * 60))
         item_start_20_min = gtk.MenuItem(label="Start (20 min)")
         item_start_20_min.connect("activate",
                                   partial(self.start, duration=20 * 60))
@@ -59,12 +57,14 @@ class App:
         item_reset.connect("activate", self.reset)
         item_quit = gtk.MenuItem(label="Quit")
         item_quit.connect("activate", self.quit)
+
         menu.append(item_start_10_min)
         menu.append(item_start_20_min)
         menu.append(item_start_30_min)
         if os.environ.get("DEBUG") is not None:
             item_start_10_sec = gtk.MenuItem(label="Start (10 sec)")
-            item_start_10_sec.connect("activate", partial(self.start, duration=10))
+            item_start_10_sec.connect("activate",
+                                      partial(self.start, duration=10))
             menu.append(item_start_10_sec)
 
         menu.append(item_reset)
