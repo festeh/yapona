@@ -16,26 +16,31 @@ def form_event(event, state):
     return json.dumps(data) + "\n"
 
 
+def write_state(path, event, state):
+    # write data to file, flushing immediately
+    with open(path, "a") as f:
+        f.write(form_event(event, state))
+        f.flush()
+
+
 class HistoryHook(Hook):
 
     def __init__(self) -> None:
         xdg_data_home = os.environ.get("XDG_DATA_HOME",
                                        os.path.expanduser("~/.local/share"))
-        self.file_path = os.path.join(xdg_data_home, utils.kAppName, "history.jsonl")
+        self.file_path = os.path.join(xdg_data_home, utils.kAppName,
+                                      "history.jsonl")
         if not os.path.exists(self.file_path):
             os.makedirs(os.path.dirname(self.file_path), exist_ok=True)
 
     @override
     def on_start(self, state: IdleState):
-        with open(self.file_path, "a") as f:
-            f.write(form_event("start", state))
+        write_state(self.file_path, "start", state)
 
     @override
     def on_interrupt(self, state: RunningState):
-        with open(self.file_path, "a") as f:
-            f.write(form_event("cancel", state))
+        write_state(self.file_path, "interrupt", state)
 
     @override
     def on_done(self, state: RunningState):
-        with open(self.file_path, "a") as f:
-            f.write(form_event("complete", state))
+        write_state(self.file_path, "done", state)
