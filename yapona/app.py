@@ -14,7 +14,7 @@ gi.require_version('Notify', '0.7')
 gi.require_version("XApp", "1.0")
 from gi.repository import Notify, XApp, Gtk as gtk
 
-IS_DEBUG = os.environ.get("YAPONA_DEBUG", True)
+IS_DEBUG = os.environ.get("YAPONA_DEBUG", False)
 
 def get_icon(name):
     icons_dir = os.path.dirname(os.path.realpath(__file__))
